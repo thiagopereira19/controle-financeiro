@@ -1,0 +1,163 @@
+/* ajuste-responsivo.css
+
+   Faixas: celular < 700 | tablet 700-1023 | notebook 1024-1279 | desktop 1280+ */
+
+/* ---------- todos os tamanhos ---------- */
+html {
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+.login {
+  min-height: 100dvh;
+}
+
+/* impede que textos/valores longos estourem a coluna */
+.g12 > *,
+.kpis > *,
+.g2 > *,
+.f2 > *,
+.hero > div {
+  min-width: 0;
+}
+.t,
+.d,
+.v {
+  overflow-wrap: anywhere;
+}
+
+/* campo de data estourava a largura no iPhone/iPad */
+input[type="date"] {
+  min-width: 0;
+  max-width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  min-height: 52px;
+}
+
+/* seta nos selects (estavam sem indicação de que abrem) */
+select {
+  padding-right: 38px;
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%2397a0c4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
+}
+
+/* ---------- celular ---------- */
+@media (max-width: 699px) {
+  .shell {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+  .hero .n {
+    font-size: clamp(26px, 8.5vw, 34px);
+  }
+}
+
+/* celulares pequenos (320-380px) */
+@media (max-width: 380px) {
+  .card {
+    padding: 14px;
+  }
+  .v {
+    font-size: 19px;
+  }
+  .hero {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+  nav button {
+    font-size: 10px;
+  }
+}
+
+/* celular/tablet deitado (pouca altura) */
+@media (max-height: 480px) and (max-width: 1023px) {
+  nav button {
+    font-size: 10px;
+    padding: 3px 0;
+  }
+  nav button.plus span {
+    width: 44px;
+    height: 44px;
+    margin-top: -16px;
+  }
+  .shell {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 84px);
+  }
+}
+
+/* ---------- tablet e notebook pequeno (700-1279) ---------- */
+@media (min-width: 700px) {
+  .g12 {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+}
+@media (min-width: 700px) and (max-width: 1279px) {
+  .g12 {
+    display: grid;
+    gap: 16px;
+    align-items: start;
+  }
+  .g12 > * {
+    margin: 0 !important;
+    grid-column: span 12;
+    order: 0;
+  }
+  .g12 > .s7 {
+    grid-column: span 7;
+  }
+  .g12 > .s5 {
+    grid-column: span 5;
+  }
+  .g12 > .s6 {
+    grid-column: span 6;
+  }
+  .narrow.g12 > .s6 {
+    grid-column: span 12;
+  }
+}
+@media (min-width: 700px) and (max-width: 1023px) {
+  .shell {
+    max-width: 860px;
+  }
+  nav div {
+    max-width: 860px;
+  }
+}
+
+/* ---------- notebook e desktop (1024+) ---------- */
+@media (min-width: 1024px) {
+  /* a tela de login ficava deslocada por causa do espaço do menu lateral */
+  body:has(#app.hide) {
+    padding-left: 0;
+  }
+  #toast {
+    left: calc(50% + 110px);
+  }
+}
+@media (min-width: 1280px) {
+  #toast {
+    left: calc(50% + 125px);
+  }
+}
+
+/* ---------- telas de toque ---------- */
+@media (pointer: coarse) {
+  .row .x,
+  .conta .x {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .chip,
+  .sm {
+    min-height: 40px;
+  }
+  .chk {
+    width: 36px;
+    height: 36px;
+  }
+}
