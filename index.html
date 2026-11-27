@@ -810,6 +810,66 @@
           bottom: 28px;
         }
       }
+      button:focus:not(:focus-visible) {
+        outline: none;
+      }
+      nav button:focus-visible {
+        outline: 2px solid var(--pri);
+        outline-offset: -2px;
+      }
+      .dsk {
+        display: none;
+      }
+      @media (min-width: 700px) {
+        .kpis {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+      @media (min-width: 1024px) and (max-width: 1279px) {
+        body {
+          padding-left: 220px;
+        }
+        nav {
+          width: 220px;
+        }
+        .shell {
+          padding: 28px 24px 40px;
+        }
+        .s7,
+        .s5,
+        .s8,
+        .s4 {
+          grid-column: span 12;
+        }
+        .o2 {
+          order: 0;
+        }
+        .narrow .s6 {
+          grid-column: span 12;
+        }
+        .mob {
+          display: block !important;
+        }
+      }
+      @media (min-width: 1280px) {
+        .narrow {
+          max-width: none;
+        }
+        .dsk {
+          display: block;
+        }
+      }
+      @media (min-width: 1536px) {
+        .shell {
+          max-width: 1380px;
+        }
+        .hero .n {
+          font-size: 52px;
+        }
+        .v {
+          font-size: 26px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -1195,15 +1255,20 @@
           h += `<div class="card s5"><div class="k">Próxima conta</div><div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:4px"><div><div class="t" style="font-size:17px">${esc(n.x.nome)}</div><div class="d">${br(n.x.venc)} · ${st(n.x, m.hoje).t}</div></div><div class="v">${fm0(n.x.valor)}</div></div><div class="bar"><i style="width:${p * 100}%"></i></div><div class="d" style="margin-top:6px">${n.cobre ? "✅ O saldo já cobre" : "Saldo cobre " + Math.round(p * 100) + "% · faltam " + fm0(n.cum - m.saldo)}</div></div>`;
         }
         h += `<div class="kpis s12"><div class="card"><div class="k">Saldo</div><div class="v ${m.saldo < 0 ? "neg" : "pos"}">${fm0(m.saldo)}</div></div><div class="card"><div class="k">A pagar</div><div class="v">${fm0(m.aPagar)}</div></div><div class="card"><div class="k">Entrou no mês</div><div class="v pos">${fm0(m.mEnt)}</div></div><div class="card"><div class="k">Saiu no mês</div><div class="v neg">${fm0(m.mSai)}</div><div class="d">sobrou ${fm0(m.mEnt - m.mSai)}</div></div></div>`;
-        const last = [];
+        const last = [],
+          t0 = new Date();
+        t0.setHours(12, 0, 0, 0);
         for (let i = 13; i >= 0; i--) {
-          const d = new Date();
-          d.setDate(d.getDate() - i);
-          const k = iso(d);
-          last.push({ k, v: m.porDia[k] || 0 });
+          const dd = new Date(t0.getTime() - i * 864e5),
+            k = iso(dd);
+          last.push({
+            k,
+            v: m.porDia[k] || 0,
+            w: WD[dd.getDay()][0].toUpperCase(),
+          });
         }
         const mx = Math.max(m.bruto, ...last.map((x) => x.v), 1);
-        h += `<div class="card s7"><div class="sec" style="margin:0"><span>Entradas dos últimos 14 dias</span><span class="pill mut">${m.streak ? "🔥 " + m.streak + (m.streak > 1 ? " dias" : " dia") : "sem sequência"}</span></div><div class="chart">${m.bruto ? `<div class="goal" style="bottom:calc(${(m.bruto / mx) * 85}% + 16px)">meta</div>` : ""}${last.map((x) => `<div class="c"><i class="${m.bruto && x.v >= m.bruto ? "hit" : ""}" style="height:${(x.v / mx) * 85}%" title="${fmt(x.v)}"></i>${x.k.slice(8)}</div>`).join("")}</div></div>`;
+        h += `<div class="card s7"><div class="sec" style="margin:0"><span>Entradas dos últimos 14 dias</span><span class="pill mut">${m.streak ? "🔥 " + m.streak + (m.streak > 1 ? " dias" : " dia") : "sem sequência"}</span></div><div class="chart">${m.bruto ? `<div class="goal" style="bottom:calc(${(m.bruto / mx) * 85}% + 16px)">meta</div>` : ""}${last.map((x) => `<div class="c"><i class="${m.bruto && x.v >= m.bruto ? "hit" : ""}" style="height:${(x.v / mx) * 85}%" title="${fmt(x.v)}"></i>${x.w}<br>${x.k.slice(8)}</div>`).join("")}</div></div>`;
         h +=
           `<div class="card s5"><div class="k">Fila de vencimentos</div>` +
           (m.seq.length
@@ -1219,14 +1284,33 @@
         return h + "</div>";
       }
 
+      function recentMov() {
+        const l = by("mov")
+          .slice()
+          .reverse()
+          .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
+          .slice(0, 7);
+        return (
+          `<div class="card"><div class="k">Últimos lançamentos</div>` +
+          (l.length
+            ? l
+                .map((m) => {
+                  const en = m.tipo === "entrada";
+                  return `<div class="row"><div><div class="t">${esc(m.cat || "")}</div><div class="d">${br(m.date)}${m.desc ? " · " + esc(m.desc) : ""}</div></div><b class="${en ? "pos" : "neg"}">${en ? "+" : "−"}${fmt(m.valor)}</b></div>`;
+                })
+                .join("")
+            : `<div class="empty"><div class="e">📒</div>Nada lançado ainda.</div>`) +
+          `</div>`
+        );
+      }
       function vLancar() {
         const e = tipo === "entrada";
-        return `<div class="narrow"><div class="card"><div class="seg"><button class="in ${e ? "on" : ""}" data-tipo="entrada">＋ Entrada</button><button class="out ${e ? "" : "on"}" data-tipo="saida">－ Saída</button></div>
+        return `<div class="narrow g12"><div class="s6"><div class="card"><div class="seg"><button class="in ${e ? "on" : ""}" data-tipo="entrada">＋ Entrada</button><button class="out ${e ? "" : "on"}" data-tipo="saida">－ Saída</button></div>
   <input id="mv" class="big" type="number" inputmode="decimal" step="0.01" placeholder="0,00" style="margin-top:16px">
   <label>Categoria</label><select id="mc" data-t="${tipo}">${opts(tipo)}</select>
   <label>Descrição (opcional)</label><input id="md" placeholder="${e ? "Ex.: Uber, 99, inDrive" : "Ex.: Gasolina posto Shell"}">
   <label>Data</label><input id="mdt" type="date" value="${iso(new Date())}"></div>
-  <button class="btn" id="ls" style="background:var(--${e ? "ok" : "bad"})">Salvar ${e ? "entrada" : "saída"}</button></div>`;
+  <button class="btn" id="ls" style="background:var(--${e ? "ok" : "bad"})">Salvar ${e ? "entrada" : "saída"}</button></div><div class="s6 dsk">${recentMov()}</div></div>`;
       }
 
       function vContas() {
@@ -1235,7 +1319,7 @@
         const list = all.filter((x) =>
           filtro === "a" ? !x.pago : filtro === "p" ? x.pago : true,
         );
-        const sf = showForm || innerWidth >= 1024;
+        const sf = showForm || innerWidth >= 1280;
         let h = `<div class="g12"><div class="s4 o2"><button class="btn mob" id="tf" style="margin:0 0 14px">${showForm ? "Fechar" : "＋ Nova conta / obrigação"}</button>`;
         if (sf)
           h += `<div class="card"><div class="k">Nova obrigação</div><label>Nome</label><input id="cn" placeholder="Ex.: Seguro do carro, academia, fatura Nubank">
@@ -1637,6 +1721,14 @@
         p.type = s ? "text" : "password";
         $("#eye").textContent = s ? "ocultar" : "mostrar";
       };
+      let wide = innerWidth >= 1280;
+      addEventListener("resize", () => {
+        const w = innerWidth >= 1280;
+        if (w !== wide) {
+          wide = w;
+          if (!$("#app").classList.contains("hide")) draw();
+        }
+      });
       try {
         TOKEN = localStorage.getItem(TK);
       } catch (e) {}
