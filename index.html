@@ -6,7 +6,16 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
-    <meta name="theme-color" content="#0b1020" />
+    <meta
+      name="theme-color"
+      content="#f6f1e7"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#0b1020"
+      media="(prefers-color-scheme: dark)"
+    />
     <title>Controle Financeiro</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,18 +25,18 @@
     />
     <style>
       :root {
-        --bg: #f3f5fb;
-        --bg2: #e9edf8;
-        --card: #fff;
-        --tx: #0f1730;
-        --mut: #66708f;
-        --bd: #e4e8f3;
+        --bg: #f6f1e7;
+        --bg2: #ece5d6;
+        --card: #fffcf5;
+        --tx: #2b2620;
+        --mut: #766d5c;
+        --bd: #e6dfce;
         --pri: #5b5bf0;
         --pri2: #8b5cf6;
         --ok: #10b981;
         --bad: #ef4444;
         --warn: #f59e0b;
-        --sh: 0 8px 30px rgba(30, 40, 90, 0.08);
+        --sh: 0 8px 30px rgba(110, 85, 40, 0.09);
       }
       @media (prefers-color-scheme: dark) {
         :root:not([data-theme="light"]) {
@@ -1041,6 +1050,36 @@
           animation: none !important;
           transition: none !important;
         }
+      }
+      @media (prefers-color-scheme: light) {
+        :root:not([data-theme="dark"]) body {
+          background:
+            radial-gradient(
+              1100px 600px at 85% -15%,
+              rgba(222, 170, 100, 0.18),
+              transparent 60%
+            ),
+            radial-gradient(
+              900px 500px at -10% 110%,
+              rgba(99, 102, 241, 0.07),
+              transparent 55%
+            ),
+            var(--bg);
+        }
+      }
+      :root[data-theme="light"] body {
+        background:
+          radial-gradient(
+            1100px 600px at 85% -15%,
+            rgba(222, 170, 100, 0.18),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 500px at -10% 110%,
+            rgba(99, 102, 241, 0.07),
+            transparent 55%
+          ),
+          var(--bg);
       }
     </style>
   </head>
